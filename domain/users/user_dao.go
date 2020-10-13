@@ -3,6 +3,7 @@ package users
 import (
 	"fmt"
 
+	"github.com/tejasa97/bookstore_users-api/datasources/sqlite/users_db"
 	"github.com/tejasa97/bookstore_users-api/utils/date_utils"
 	"github.com/tejasa97/bookstore_users-api/utils/errors"
 )
@@ -12,6 +13,10 @@ var (
 )
 
 func (user *User) Get() *errors.RestErr {
+	if err := users_db.Client.Ping(); err != nil {
+		panic(err)
+	}
+
 	result := usersDB[user.Id]
 	if result == nil {
 		return errors.NewNotFound(fmt.Sprintf("user %d not found", user.Id))
