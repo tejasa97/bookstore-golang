@@ -2,16 +2,20 @@ package users
 
 import (
 	"strings"
+	"time"
 
+	// _ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/tejasa97/bookstore_users-api/utils/errors"
 )
 
 type User struct {
-	Id          int64  `json:"id"`
-	FirstName   string `json:"first_name"`
-	Lastname    string `json:"last_name"`
-	Email       string `json:"email"`
-	DateCreated string `json:"date_created"`
+	ID        int64      `json:"id" gorm:"primary_key"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"-";sql:"index"`
+	FirstName string     `json:"first_name"`
+	Lastname  string     `json:"last_name"`
+	Email     string     `json:"email" gorm:"not_null; unique"`
 }
 
 func (user *User) Validate() *errors.RestErr {

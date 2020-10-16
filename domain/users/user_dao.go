@@ -4,45 +4,38 @@ import (
 	"fmt"
 
 	"github.com/tejasa97/bookstore_users-api/datasources/sqlite/users_db"
-	"github.com/tejasa97/bookstore_users-api/utils/date_utils"
 	"github.com/tejasa97/bookstore_users-api/utils/errors"
 )
 
 var (
-	usersDB = make(map[int64]*User)
+	DAO usersDaoInterface = &usersDao{}
 )
 
-func (user *User) Get() *errors.RestErr {
-	if err := users_db.Client.Ping(); err != nil {
-		panic(err)
-	}
+type usersDaoInterface interface {
+	Get(*User) *errors.RestErr
+	Save(*User) *errors.RestErr
+}
+type usersDao struct {
+}
 
-	result := usersDB[user.Id]
-	if result == nil {
-		return errors.NewNotFound(fmt.Sprintf("user %d not found", user.Id))
-	}
+func init() {
+	users_db.Client.AutoMigrate(&User{})
+}
 
-	user.Id = result.Id
-	user.FirstName = result.FirstName
-	user.Lastname = result.Lastname
-	user.Email = result.Email
-	user.DateCreated = result.DateCreated
+func (u *usersDao) Get(user *User) *errors.RestErr {
+
+	if users_db.Client.First(&user).Error != nil {
+		return errors.NewBadRequest("invalid user id")
+	}
 
 	return nil
 }
 
-func (user *User) Save() *errors.RestErr {
-	current := usersDB[user.Id]
-	if current != nil {
-		if current.Email == user.Email {
-			return errors.NewBadRequest(fmt.Sprintf("email %s already registered", current.Email))
-		}
-		return errors.NewBadRequest(fmt.Sprintf("user %d already exists", user.Id))
+func (u *usersDao) Save(user *User) *errors.RestErr {
+
+	if err := users_db.Client.Create(&user).Error; err != nil {
+		return errors.NewBadRequest(fmt.Sprintf("email %s already exists"))
 	}
 
-	now := date_utils.GetNowString()
-	user.DateCreated = now
-
-	usersDB[user.Id] = user
 	return nil
 }

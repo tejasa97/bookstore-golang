@@ -1,33 +1,25 @@
 package users_db
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
 
-	_ "github.com/mattn/go-sqlite3"
-)
-
-const (
-	DBName = "tejas.db"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 var (
-	Client *sql.DB
+	Client *gorm.DB
 )
 
 func init() {
 
+	const DBName = "tejas.db"
+
 	var err error
-	Client, err = sql.Open("sqlite3", "./tejas.db")
-	fmt.Println("in DB", Client)
+	Client, err = gorm.Open(sqlite.Open(DBName), &gorm.Config{})
+
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("Failed to connect to database %s \n", DBName))
 	}
-
-	if err = Client.Ping(); err != nil {
-		panic(err)
-	}
-
-	log.Printf("%s DB successfully configured", DBName)
+	fmt.Printf("Connection successfully opened to database %s \n", DBName)
 }
