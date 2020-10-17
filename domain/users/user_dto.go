@@ -10,7 +10,7 @@ import (
 
 type User struct {
 	ID        int64      `json:"id" gorm:"primary_key"`
-	CreatedAt time.Time  `json:"created_at"`
+	CreatedAt time.Time  `json:"created_at";"<-:create"`
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"-";sql:"index"`
 	FirstName string     `json:"first_name"`
