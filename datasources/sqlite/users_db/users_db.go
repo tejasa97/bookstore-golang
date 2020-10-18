@@ -2,6 +2,7 @@ package users_db
 
 import (
 	"fmt"
+	"log"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -21,5 +22,5 @@ func init() {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to connect to database %s \n", DBName))
 	}
-	fmt.Printf("Connection successfully opened to database %s \n", DBName)
+	log.Printf("Connection successfully opened to database %s \n", DBName)
 }

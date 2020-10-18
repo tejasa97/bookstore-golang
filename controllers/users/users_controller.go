@@ -29,14 +29,14 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
-	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		err := errors.NewBadRequest("invalid user id format")
 		c.JSON(err.Status, err)
 		return
 	}
 
-	user, getErr := services.UsersService.GetUser(userId)
+	user, getErr := services.UsersService.GetUser(userID)
 	if getErr != nil {
 		err := errors.NewBadRequest("invalid user id")
 		c.JSON(err.Status, err)
@@ -49,7 +49,7 @@ func GetUser(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	var user users.User
 
-	userId, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		err := errors.NewBadRequest("invalid user id format")
 		c.JSON(err.Status, err)
@@ -62,7 +62,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	result, getErr := services.UsersService.UpdateUser(userId, user)
+	result, getErr := services.UsersService.UpdateUser(userID, user)
 	if getErr != nil {
 		err := errors.NewBadRequest("invalid user id")
 		c.JSON(err.Status, err)
@@ -72,6 +72,23 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusAccepted, result)
 }
 
+func DeleteUser(c *gin.Context) {
+
+	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
+	if err != nil {
+		err := errors.NewBadRequest("invalid user id format")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if deleteErr := services.UsersService.DeleteUser(userID); deleteErr != nil {
+		c.JSON(deleteErr.Status, deleteErr)
+		return
+	}
+
+	c.JSON(http.StatusAccepted, gin.H{"status": "deleted"})
+}
+
 func SearchUser(c *gin.Context) {
-	c.String(http.StatusNotImplemented, "Implement me!")
+	c.String(http.StatusNotImplemented, "Not implemented")
 }

@@ -13,6 +13,7 @@ type usersServiceInterface interface {
 	GetUser(int64) (*users.User, *errors.RestErr)
 	CreateUser(users.User) (*users.User, *errors.RestErr)
 	UpdateUser(int64, users.User) (*users.User, *errors.RestErr)
+	DeleteUser(userID int64) *errors.RestErr
 }
 type usersService struct {
 }
@@ -55,4 +56,13 @@ func (s *usersService) UpdateUser(userID int64, user users.User) (*users.User, *
 	}
 
 	return &user, nil
+}
+
+func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
+
+	if err := users.DAO.Delete(userID); err != nil {
+		return err
+	}
+
+	return nil
 }
