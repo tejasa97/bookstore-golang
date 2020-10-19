@@ -52,15 +52,19 @@ func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User)
 		return nil, errors.NewBadRequest("invalid user id")
 	}
 
-	updated_user, err := users.DAO.Update(isPartial, userID, &user)
+	updatedUser, err := users.DAO.Update(isPartial, userID, &user)
 	if err != nil {
 		return nil, err
 	}
 
-	return updated_user, nil
+	return updatedUser, nil
 }
 
 func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
+
+	if userID <= 0 {
+		return errors.NewBadRequest("invalid user id")
+	}
 
 	if err := users.DAO.Delete(userID); err != nil {
 		return err
