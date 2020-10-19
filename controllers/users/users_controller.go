@@ -62,10 +62,12 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	result, getErr := services.UsersService.UpdateUser(userID, user)
-	if getErr != nil {
-		err := errors.NewBadRequest("invalid user id")
-		c.JSON(err.Status, err)
+	// To update only certain fields
+	isPartial := c.Request.Method == http.MethodPatch
+
+	result, updateErr := services.UsersService.UpdateUser(isPartial, userID, user)
+	if updateErr != nil {
+		c.JSON(updateErr.Status, updateErr)
 		return
 	}
 

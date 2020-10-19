@@ -12,7 +12,7 @@ var (
 type usersServiceInterface interface {
 	GetUser(int64) (*users.User, *errors.RestErr)
 	CreateUser(users.User) (*users.User, *errors.RestErr)
-	UpdateUser(int64, users.User) (*users.User, *errors.RestErr)
+	UpdateUser(bool, int64, users.User) (*users.User, *errors.RestErr)
 	DeleteUser(userID int64) *errors.RestErr
 }
 type usersService struct {
@@ -46,16 +46,18 @@ func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr
 	return &user, nil
 }
 
-func (s *usersService) UpdateUser(userID int64, user users.User) (*users.User, *errors.RestErr) {
-	if err := user.Validate(); err != nil {
+func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User) (*users.User, *errors.RestErr) {
+
+	if userID <= 0 {
+		return nil, errors.NewBadRequest("invalid user id")
+	}
+
+	updated_user, err := users.DAO.Update(isPartial, userID, &user)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := users.DAO.Update(userID, &user); err != nil {
-		return nil, err
-	}
-
-	return &user, nil
+	return updated_user, nil
 }
 
 func (s *usersService) DeleteUser(userID int64) *errors.RestErr {

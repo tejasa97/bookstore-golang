@@ -14,7 +14,7 @@ type User struct {
 	UpdatedAt time.Time  `json:"updated_at"`
 	DeletedAt *time.Time `json:"-";sql:"index"`
 	FirstName string     `json:"first_name"`
-	Lastname  string     `json:"last_name"`
+	LastName  string     `json:"last_name"`
 	Email     string     `json:"email" gorm:"not_null; unique"`
 }
 
