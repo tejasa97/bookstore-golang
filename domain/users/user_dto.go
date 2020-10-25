@@ -33,6 +33,10 @@ func (user *User) Validate() *errors.RestErr {
 	user.Status = strings.TrimSpace(strings.ToLower(user.Status))
 	user.Password = strings.TrimSpace(user.Password)
 
+	if user.FirstName == "" {
+		return errors.NewBadRequest("invalid first name")
+	}
+
 	if user.Email == "" {
 		return errors.NewBadRequest("invalid email address")
 	}
