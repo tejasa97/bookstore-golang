@@ -14,7 +14,7 @@ var (
 type usersDaoInterface interface {
 	Get(*User) *errors.RestErr
 	Save(*User) *errors.RestErr
-	Update(bool, int64, *User) (*User, *errors.RestErr)
+	Update(*User) *errors.RestErr
 	Delete(int64) *errors.RestErr
 	FindByStatus(users *[]User, status string) *errors.RestErr
 }
@@ -43,44 +43,13 @@ func (u *usersDao) Save(user *User) *errors.RestErr {
 	return nil
 }
 
-func (u *usersDao) Update(isPartial bool, userID int64, user *User) (*User, *errors.RestErr) {
+func (u *usersDao) Update(user *User) *errors.RestErr {
 
-	db_user := User{ID: userID}
-	if err := u.Get(&db_user); err != nil {
-		return nil, err
+	if err := users_db.Client.Save(&user).Error; err != nil {
+		return errors.NewBadRequest(fmt.Sprintf("email %s already exists", user.Email))
 	}
 
-	// update only provided params if `PATCH` method
-	if isPartial {
-		if user.FirstName != "" {
-			db_user.FirstName = user.FirstName
-		}
-		if user.LastName != "" {
-			db_user.LastName = user.LastName
-		}
-		if user.Email != "" {
-			db_user.Email = user.Email
-		}
-		if user.Status != "" {
-			db_user.Status = user.Status
-		}
-		// update all params if `PUT` method
-	} else {
-		db_user.FirstName = user.FirstName
-		db_user.LastName = user.LastName
-		db_user.Email = user.Email
-		db_user.Status = user.Status
-	}
-
-	if err := db_user.Validate(); err != nil {
-		return nil, err
-	}
-
-	if err := users_db.Client.Save(&db_user).Error; err != nil {
-		return nil, errors.NewBadRequest(fmt.Sprintf("email %s already exists", user.Email))
-	}
-
-	return &db_user, nil
+	return nil
 }
 
 func (u *usersDao) Delete(userID int64) *errors.RestErr {

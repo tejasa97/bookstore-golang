@@ -40,6 +40,11 @@ func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr
 		return nil, err
 	}
 
+	if err := user.GenerateHashedPassword(); err != nil {
+		return nil, err
+	}
+
+	user.Status = users.StatusActive
 	if err := users.DAO.Save(&user); err != nil {
 		return nil, err
 	}
@@ -53,12 +58,44 @@ func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User)
 		return nil, errors.NewBadRequest("invalid user id")
 	}
 
-	updatedUser, err := users.DAO.Update(isPartial, userID, &user)
+	dbUser := users.User{ID: userID}
+	if err := users.DAO.Get(&dbUser); err != nil {
+		return nil, err
+	}
+
+	// update only provided params if `PATCH` method
+	// TODO: Enable update for `password` field also
+	if isPartial {
+		if user.FirstName != "" {
+			dbUser.FirstName = user.FirstName
+		}
+		if user.LastName != "" {
+			dbUser.LastName = user.LastName
+		}
+		if user.Email != "" {
+			dbUser.Email = user.Email
+		}
+		if user.Status != "" {
+			dbUser.Status = user.Status
+		}
+		// update all params if `PUT` method
+	} else {
+		dbUser.FirstName = user.FirstName
+		dbUser.LastName = user.LastName
+		dbUser.Email = user.Email
+		dbUser.Status = user.Status
+	}
+
+	if err := dbUser.Validate(); err != nil {
+		return nil, err
+	}
+
+	err := users.DAO.Update(&dbUser)
 	if err != nil {
 		return nil, err
 	}
 
-	return updatedUser, nil
+	return &dbUser, nil
 }
 
 func (s *usersService) DeleteUser(userID int64) *errors.RestErr {

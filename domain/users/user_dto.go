@@ -1,11 +1,17 @@
 package users
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
-	// _ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/tejasa97/bookstore_users-api/utils/errors"
+	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	StatusActive   = "active"
+	StatusInactive = "inactive"
 )
 
 type User struct {
@@ -17,7 +23,7 @@ type User struct {
 	LastName  string     `json:"last_name"`
 	Email     string     `json:"email" gorm:"not_null; unique"`
 	Status    string     `json:"status"`
-	Password  string     `json:"-"`
+	Password  string     `json:"password"`
 }
 
 func (user *User) Validate() *errors.RestErr {
@@ -25,9 +31,28 @@ func (user *User) Validate() *errors.RestErr {
 	user.LastName = strings.TrimSpace(user.LastName)
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
 	user.Status = strings.TrimSpace(strings.ToLower(user.Status))
+	user.Password = strings.TrimSpace(user.Password)
 
 	if user.Email == "" {
 		return errors.NewBadRequest("invalid email address")
 	}
+	if user.Password == "" {
+		return errors.NewBadRequest("invalid password")
+	}
+
+	return nil
+}
+
+func (user *User) GenerateHashedPassword() *errors.RestErr {
+
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(fmt.Sprintf("Error hashing the input %s", user.Password))
+		hashErr := errors.NewInternalServerError("failed to hash password")
+		return hashErr
+	}
+
+	user.Password = string(hashedPasswordBytes)
+
 	return nil
 }
