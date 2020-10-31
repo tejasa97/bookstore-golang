@@ -36,6 +36,8 @@ func (s *usersService) GetUser(userID int64) (*users.User, *errors.RestErr) {
 }
 
 func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr) {
+	user.Status = users.StatusActive
+
 	if err := user.Validate(); err != nil {
 		return nil, err
 	}

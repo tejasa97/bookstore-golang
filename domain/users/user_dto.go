@@ -44,6 +44,9 @@ func (user *User) Validate() *errors.RestErr {
 		return errors.NewBadRequest("invalid password")
 	}
 
+	if (user.Status != StatusActive) && (user.Status != StatusInactive) {
+		return errors.NewBadRequest("invalid status")
+	}
 	return nil
 }
 
