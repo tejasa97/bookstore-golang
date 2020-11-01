@@ -14,7 +14,7 @@ type usersServiceInterface interface {
 	CreateUser(users.User) (*users.User, *errors.RestErr)
 	UpdateUser(bool, int64, users.User) (*users.User, *errors.RestErr)
 	DeleteUser(int64) *errors.RestErr
-	FindByStatus(string) (*[]users.User, *errors.RestErr)
+	FindByStatus(string) (*users.Users, *errors.RestErr)
 }
 type usersService struct {
 }
@@ -46,7 +46,6 @@ func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr
 		return nil, err
 	}
 
-	user.Status = users.StatusActive
 	if err := users.DAO.Save(&user); err != nil {
 		return nil, err
 	}
@@ -113,9 +112,9 @@ func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
 	return nil
 }
 
-func (s *usersService) FindByStatus(status string) (*[]users.User, *errors.RestErr) {
+func (s *usersService) FindByStatus(status string) (*users.Users, *errors.RestErr) {
 
-	usersFound := []users.User{}
+	var usersFound users.Users
 	if err := users.DAO.FindByStatus(&usersFound, status); err != nil {
 		return nil, err
 	}

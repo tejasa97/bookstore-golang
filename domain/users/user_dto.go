@@ -9,6 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type Users []User
+
 const (
 	StatusActive   = "active"
 	StatusInactive = "inactive"

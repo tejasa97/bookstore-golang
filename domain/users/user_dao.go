@@ -16,7 +16,7 @@ type usersDaoInterface interface {
 	Save(*User) *errors.RestErr
 	Update(*User) *errors.RestErr
 	Delete(int64) *errors.RestErr
-	FindByStatus(users *[]User, status string) *errors.RestErr
+	FindByStatus(*Users, string) *errors.RestErr
 }
 type usersDao struct {
 }
@@ -66,7 +66,7 @@ func (u *usersDao) Delete(userID int64) *errors.RestErr {
 	return nil
 }
 
-func (u *usersDao) FindByStatus(users *[]User, status string) *errors.RestErr {
+func (u *usersDao) FindByStatus(users *Users, status string) *errors.RestErr {
 
 	results := users_db.Client.Find(&users, User{Status: status})
 	if results.Error != nil {
