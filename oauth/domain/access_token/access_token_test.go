@@ -6,7 +6,7 @@ import (
 )
 
 func TestAccessTokenConstants(t *testing.T) {
-	if ExpirationTime != 24 {
+	if ExpirationTime != 24*time.Hour {
 		t.Error("expiration time should be 24 hours")
 	}
 }

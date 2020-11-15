@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	ExpirationTime = 24 //Hours
+	ExpirationTime = 24 * time.Hour
 )
 
 type AccessToken struct {
@@ -17,7 +17,7 @@ type AccessToken struct {
 
 func GetNewAccessToken() AccessToken {
 	return AccessToken{
-		Expires: time.Now().UTC().Add(ExpirationTime * time.Hour).Unix(),
+		Expires: time.Now().UTC().Add(ExpirationTime).Unix(),
 	}
 }
 
