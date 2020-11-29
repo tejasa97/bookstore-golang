@@ -1,4 +1,4 @@
-module github.com/tejasa97/bookstore_users-api
+module github.com/tejasa97/bookstore-golang
 
 go 1.15
 
