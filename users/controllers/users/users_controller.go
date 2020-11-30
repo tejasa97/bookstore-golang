@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/tejasa97/bookstore_users-api/services"
-	"github.com/tejasa97/bookstore_users-api/utils/errors"
+	"github.com/tejasa97/bookstore-golang/users/services"
+	"github.com/tejasa97/bookstore-golang/users/utils/errors"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tejasa97/bookstore_users-api/domain/users"
+	"github.com/tejasa97/bookstore-golang/users/domain/users"
 )
 
 func CreateUser(c *gin.Context) {

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tejasa97/bookstore_users-api/utils/errors"
+	"github.com/tejasa97/bookstore-golang/users/utils/errors"
 	"golang.org/x/crypto/bcrypt"
 )
 

@@ -3,8 +3,8 @@ package users
 import (
 	"fmt"
 
-	"github.com/tejasa97/bookstore_users-api/datasources/sqlite/users_db"
-	"github.com/tejasa97/bookstore_users-api/utils/errors"
+	"github.com/tejasa97/bookstore-golang/users/datasources/sqlite/users_db"
+	"github.com/tejasa97/bookstore-golang/users/utils/errors"
 )
 
 var (

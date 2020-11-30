@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/tejasa97/bookstore_users-api/domain/users"
-	"github.com/tejasa97/bookstore_users-api/utils/errors"
+	"github.com/tejasa97/bookstore-golang/users/domain/users"
+	"github.com/tejasa97/bookstore-golang/users/utils/errors"
 )
 
 var (
