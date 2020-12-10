@@ -3,6 +3,8 @@ package users
 import (
 	"fmt"
 
+	// "github.com/tejasa97/bookstore-golang/users/domain/users"
+
 	"github.com/tejasa97/bookstore-golang/users/datasources/sqlite/users_db"
 	"github.com/tejasa97/bookstore-golang/users/utils/errors"
 )
@@ -13,6 +15,7 @@ var (
 
 type usersDaoInterface interface {
 	Get(*User) *errors.RestErr
+	GetByEmailPassword(*User) *errors.RestErr
 	Save(*User) *errors.RestErr
 	Update(*User) *errors.RestErr
 	Delete(int64) *errors.RestErr
@@ -29,6 +32,22 @@ func (u *usersDao) Get(user *User) *errors.RestErr {
 
 	if users_db.Client.First(&user).Error != nil {
 		return errors.NewBadRequest("invalid user id")
+	}
+
+	return nil
+}
+
+func (u *usersDao) GetByEmailPassword(user *User) *errors.RestErr {
+
+	plainPassword := user.Password
+
+	// only get `active` users
+	if users_db.Client.Where("email = ? AND status = ?", user.Email, StatusActive).First(&user).Error != nil {
+		return errors.NewBadRequest("invalid user credentials")
+	}
+
+	if err := CompareHashAndPassword(user.Password, plainPassword); err != nil {
+		return errors.NewBadRequest("invalid user credentials")
 	}
 
 	return nil

@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -56,7 +55,6 @@ func (user *User) GenerateHashedPassword() *errors.RestErr {
 
 	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println(fmt.Sprintf("Error hashing the input %s", user.Password))
 		hashErr := errors.NewInternalServerError("failed to hash password")
 		return hashErr
 	}
@@ -64,4 +62,9 @@ func (user *User) GenerateHashedPassword() *errors.RestErr {
 	user.Password = string(hashedPasswordBytes)
 
 	return nil
+}
+
+func CompareHashAndPassword(hashedPassword string, password string) error {
+	// returns `nil` if equal
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
 }

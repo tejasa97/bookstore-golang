@@ -46,6 +46,23 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
 }
 
+func LoginUser(c *gin.Context) {
+	var user_req users.LoginRequest
+	if err := c.ShouldBindJSON(&user_req); err != nil {
+		restErr := errors.NewBadRequest("invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+
+	user, getErr := services.UsersService.LoginUser(user_req)
+	if getErr != nil {
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+
+	c.JSON(http.StatusOK, user.Marshall(c.GetHeader("X-Public") == "true"))
+}
+
 func UpdateUser(c *gin.Context) {
 	var user users.User
 
