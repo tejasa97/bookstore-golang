@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tejasa97/bookstore-golang/oauth/domain/access_token"
+	atDomain "github.com/tejasa97/bookstore-golang/oauth/domain/access_token"
+	"github.com/tejasa97/bookstore-golang/oauth/services/access_token"
 	"github.com/tejasa97/bookstore-golang/oauth/utils/errors"
 )
 
@@ -34,17 +35,18 @@ func (handler *accessTokenHandler) GetById(c *gin.Context) {
 }
 
 func (handler *accessTokenHandler) Create(c *gin.Context) {
-	var at access_token.AccessToken
-	if err := c.ShouldBindJSON(&at); err != nil {
+	var at_request atDomain.AccessTokenRequest
+	if err := c.ShouldBindJSON(&at_request); err != nil {
 		restErr := errors.NewBadRequest("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
 
-	if err := handler.service.Create(at); err != nil {
+	accessToken, err := handler.service.Create(at_request)
+	if err != nil {
 		c.JSON(err.Status, err)
 		return
 	}
 
-	c.JSON(http.StatusCreated, at)
+	c.JSON(http.StatusCreated, accessToken)
 }
