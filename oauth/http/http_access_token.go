@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	atDomain "github.com/tejasa97/bookstore-golang/oauth/domain/access_token"
 	"github.com/tejasa97/bookstore-golang/oauth/services/access_token"
-	"github.com/tejasa97/bookstore-golang/oauth/utils/errors"
+	"github.com/tejasa97/utils-go/rest_errors"
 )
 
 type AccessTokenHandler interface {
@@ -37,7 +37,7 @@ func (handler *accessTokenHandler) GetById(c *gin.Context) {
 func (handler *accessTokenHandler) Create(c *gin.Context) {
 	var at_request atDomain.AccessTokenRequest
 	if err := c.ShouldBindJSON(&at_request); err != nil {
-		restErr := errors.NewBadRequest("invalid json body")
+		restErr := rest_errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}

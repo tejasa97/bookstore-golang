@@ -5,14 +5,14 @@ import (
 
 	"github.com/tejasa97/bookstore-golang/oauth/domain/access_token"
 	"github.com/tejasa97/bookstore-golang/oauth/repository/db"
+	"github.com/tejasa97/utils-go/rest_errors"
 
 	"github.com/tejasa97/bookstore-golang/oauth/repository/rest"
-	"github.com/tejasa97/bookstore-golang/oauth/utils/errors"
 )
 
 type Service interface {
-	GetById(string) (*access_token.AccessToken, *errors.RestErr)
-	Create(access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RestErr)
+	GetById(string) (*access_token.AccessToken, *rest_errors.RestErr)
+	Create(access_token.AccessTokenRequest) (*access_token.AccessToken, *rest_errors.RestErr)
 }
 
 type service struct {
@@ -27,10 +27,10 @@ func NewService(usersRepo rest.RestUsersRepository, dbRepo db.DbRepository) Serv
 	}
 }
 
-func (s *service) GetById(accessTokenId string) (*access_token.AccessToken, *errors.RestErr) {
+func (s *service) GetById(accessTokenId string) (*access_token.AccessToken, *rest_errors.RestErr) {
 	accessTokenId = strings.TrimSpace(accessTokenId)
 	if len(accessTokenId) == 0 {
-		return nil, errors.NewBadRequest("invalid access token id")
+		return nil, rest_errors.NewBadRequestError("invalid access token id")
 	}
 	accessToken, err := s.dbRepo.GetById(accessTokenId)
 	if err != nil {
@@ -40,7 +40,7 @@ func (s *service) GetById(accessTokenId string) (*access_token.AccessToken, *err
 	return accessToken, nil
 }
 
-func (s *service) Create(at_request access_token.AccessTokenRequest) (*access_token.AccessToken, *errors.RestErr) {
+func (s *service) Create(at_request access_token.AccessTokenRequest) (*access_token.AccessToken, *rest_errors.RestErr) {
 	if err := at_request.Validate(); err != nil {
 		return nil, err
 	}

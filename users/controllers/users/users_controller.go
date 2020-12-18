@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/tejasa97/bookstore-golang/users/services"
-	"github.com/tejasa97/bookstore-golang/users/utils/errors"
+	"github.com/tejasa97/utils-go/rest_errors"
 
 	"github.com/gin-gonic/gin"
 	"github.com/tejasa97/bookstore-golang/users/domain/users"
@@ -15,7 +15,7 @@ func CreateUser(c *gin.Context) {
 	var user users.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		restErr := errors.NewBadRequest("invalid json body")
+		restErr := rest_errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
@@ -31,14 +31,14 @@ func CreateUser(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
-		err := errors.NewBadRequest("invalid user id format")
+		err := rest_errors.NewBadRequestError("invalid user id format")
 		c.JSON(err.Status, err)
 		return
 	}
 
 	user, getErr := services.UsersService.GetUser(userID)
 	if getErr != nil {
-		err := errors.NewBadRequest("invalid user id")
+		err := rest_errors.NewBadRequestError("invalid user id")
 		c.JSON(err.Status, err)
 		return
 	}
@@ -49,7 +49,7 @@ func GetUser(c *gin.Context) {
 func LoginUser(c *gin.Context) {
 	var user_req users.LoginRequest
 	if err := c.ShouldBindJSON(&user_req); err != nil {
-		restErr := errors.NewBadRequest("invalid json body")
+		restErr := rest_errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
@@ -68,13 +68,13 @@ func UpdateUser(c *gin.Context) {
 
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
-		err := errors.NewBadRequest("invalid user id format")
+		err := rest_errors.NewBadRequestError("invalid user id format")
 		c.JSON(err.Status, err)
 		return
 	}
 
 	if err := c.ShouldBindJSON(&user); err != nil {
-		restErr := errors.NewBadRequest("invalid json body")
+		restErr := rest_errors.NewBadRequestError("invalid json body")
 		c.JSON(restErr.Status, restErr)
 		return
 	}
@@ -95,7 +95,7 @@ func DeleteUser(c *gin.Context) {
 
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
-		err := errors.NewBadRequest("invalid user id format")
+		err := rest_errors.NewBadRequestError("invalid user id format")
 		c.JSON(err.Status, err)
 		return
 	}

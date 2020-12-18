@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tejasa97/bookstore-golang/users/utils/errors"
+	"github.com/tejasa97/utils-go/rest_errors"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -27,7 +27,7 @@ type User struct {
 	Password  string     `json:"password"`
 }
 
-func (user *User) Validate() *errors.RestErr {
+func (user *User) Validate() *rest_errors.RestErr {
 	user.FirstName = strings.TrimSpace(user.FirstName)
 	user.LastName = strings.TrimSpace(user.LastName)
 	user.Email = strings.TrimSpace(strings.ToLower(user.Email))
@@ -35,27 +35,27 @@ func (user *User) Validate() *errors.RestErr {
 	user.Password = strings.TrimSpace(user.Password)
 
 	if user.FirstName == "" {
-		return errors.NewBadRequest("invalid first name")
+		return rest_errors.NewBadRequestError("invalid first name")
 	}
 
 	if user.Email == "" {
-		return errors.NewBadRequest("invalid email address")
+		return rest_errors.NewBadRequestError("invalid email address")
 	}
 	if user.Password == "" {
-		return errors.NewBadRequest("invalid password")
+		return rest_errors.NewBadRequestError("invalid password")
 	}
 
 	if (user.Status != StatusActive) && (user.Status != StatusInactive) {
-		return errors.NewBadRequest("invalid status")
+		return rest_errors.NewBadRequestError("invalid status")
 	}
 	return nil
 }
 
-func (user *User) GenerateHashedPassword() *errors.RestErr {
+func (user *User) GenerateHashedPassword() *rest_errors.RestErr {
 
 	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		hashErr := errors.NewInternalServerError("failed to hash password")
+		hashErr := rest_errors.NewInternalServerError("failed to hash password")
 		return hashErr
 	}
 

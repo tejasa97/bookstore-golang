@@ -2,7 +2,7 @@ package services
 
 import (
 	"github.com/tejasa97/bookstore-golang/users/domain/users"
-	"github.com/tejasa97/bookstore-golang/users/utils/errors"
+	"github.com/tejasa97/utils-go/rest_errors"
 )
 
 var (
@@ -10,21 +10,21 @@ var (
 )
 
 type usersServiceInterface interface {
-	GetUser(int64) (*users.User, *errors.RestErr)
-	CreateUser(users.User) (*users.User, *errors.RestErr)
-	UpdateUser(bool, int64, users.User) (*users.User, *errors.RestErr)
-	DeleteUser(int64) *errors.RestErr
-	FindByStatus(string) (*users.Users, *errors.RestErr)
-	LoginUser(users.LoginRequest) (*users.User, *errors.RestErr)
+	GetUser(int64) (*users.User, *rest_errors.RestErr)
+	CreateUser(users.User) (*users.User, *rest_errors.RestErr)
+	UpdateUser(bool, int64, users.User) (*users.User, *rest_errors.RestErr)
+	DeleteUser(int64) *rest_errors.RestErr
+	FindByStatus(string) (*users.Users, *rest_errors.RestErr)
+	LoginUser(users.LoginRequest) (*users.User, *rest_errors.RestErr)
 }
 type usersService struct {
 }
 
-func (s *usersService) GetUser(userID int64) (*users.User, *errors.RestErr) {
+func (s *usersService) GetUser(userID int64) (*users.User, *rest_errors.RestErr) {
 
 	// user ID has to be more than 0
 	if userID <= 0 {
-		return nil, errors.NewBadRequest("invalid user id")
+		return nil, rest_errors.NewBadRequestError("invalid user id")
 	}
 
 	user := &users.User{ID: userID}
@@ -36,7 +36,7 @@ func (s *usersService) GetUser(userID int64) (*users.User, *errors.RestErr) {
 	return user, nil
 }
 
-func (s *usersService) LoginUser(user_req users.LoginRequest) (*users.User, *errors.RestErr) {
+func (s *usersService) LoginUser(user_req users.LoginRequest) (*users.User, *rest_errors.RestErr) {
 	user := &users.User{
 		Email:    user_req.Email,
 		Password: user_req.Password,
@@ -49,7 +49,7 @@ func (s *usersService) LoginUser(user_req users.LoginRequest) (*users.User, *err
 	return user, nil
 }
 
-func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr) {
+func (s *usersService) CreateUser(user users.User) (*users.User, *rest_errors.RestErr) {
 	user.Status = users.StatusActive
 
 	if err := user.Validate(); err != nil {
@@ -67,10 +67,10 @@ func (s *usersService) CreateUser(user users.User) (*users.User, *errors.RestErr
 	return &user, nil
 }
 
-func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User) (*users.User, *errors.RestErr) {
+func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User) (*users.User, *rest_errors.RestErr) {
 
 	if userID <= 0 {
-		return nil, errors.NewBadRequest("invalid user id")
+		return nil, rest_errors.NewBadRequestError("invalid user id")
 	}
 
 	dbUser := users.User{ID: userID}
@@ -113,10 +113,10 @@ func (s *usersService) UpdateUser(isPartial bool, userID int64, user users.User)
 	return &dbUser, nil
 }
 
-func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
+func (s *usersService) DeleteUser(userID int64) *rest_errors.RestErr {
 
 	if userID <= 0 {
-		return errors.NewBadRequest("invalid user id")
+		return rest_errors.NewBadRequestError("invalid user id")
 	}
 
 	if err := users.DAO.Delete(userID); err != nil {
@@ -126,7 +126,7 @@ func (s *usersService) DeleteUser(userID int64) *errors.RestErr {
 	return nil
 }
 
-func (s *usersService) FindByStatus(status string) (*users.Users, *errors.RestErr) {
+func (s *usersService) FindByStatus(status string) (*users.Users, *rest_errors.RestErr) {
 
 	var usersFound users.Users
 	if err := users.DAO.FindByStatus(&usersFound, status); err != nil {
