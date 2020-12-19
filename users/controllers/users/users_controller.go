@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/tejasa97/bookstore-golang/users/services"
+	"github.com/tejasa97/oauth-go/oauth"
 	"github.com/tejasa97/utils-go/rest_errors"
 
 	"github.com/gin-gonic/gin"
@@ -29,6 +30,12 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetUser(c *gin.Context) {
+	atErr := oauth.AuthenticateRequest(c.Request)
+	if atErr != nil {
+		c.JSON(atErr.Status, atErr)
+		return
+	}
+
 	userID, err := strconv.ParseInt(c.Param("user_id"), 10, 64)
 	if err != nil {
 		err := rest_errors.NewBadRequestError("invalid user id format")
