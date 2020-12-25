@@ -89,7 +89,7 @@ func (u *usersDao) FindByStatus(users *Users, status string) *rest_errors.RestEr
 
 	results := users_db.Client.Find(&users, User{Status: status})
 	if results.Error != nil {
-		return rest_errors.NewInternalServerError("error while trying to find users by status")
+		return rest_errors.NewInternalServerError("error while trying to find users by status", results.Error)
 	}
 
 	return nil

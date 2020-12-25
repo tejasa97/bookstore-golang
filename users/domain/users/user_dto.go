@@ -55,7 +55,7 @@ func (user *User) GenerateHashedPassword() *rest_errors.RestErr {
 
 	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		hashErr := rest_errors.NewInternalServerError("failed to hash password")
+		hashErr := rest_errors.NewInternalServerError("failed to hash password", err)
 		return hashErr
 	}
 

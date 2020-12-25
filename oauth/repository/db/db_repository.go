@@ -35,7 +35,7 @@ func (r *dbRepository) GetById(id string) (*access_token.AccessToken, *rest_erro
 		if err == gocql.ErrNotFound {
 			return nil, rest_errors.NewNotFoundError("invalid access token")
 		}
-		return nil, rest_errors.NewInternalServerError(err.Error())
+		return nil, rest_errors.NewInternalServerError("database error", err)
 	}
 	return &result, nil
 }
@@ -47,7 +47,7 @@ func (r *dbRepository) Create(at access_token.AccessToken) *rest_errors.RestErr 
 		at.ClientID,
 		at.Expires,
 	).Exec(); err != nil {
-		return rest_errors.NewInternalServerError(err.Error())
+		return rest_errors.NewInternalServerError("database error", err)
 	}
 	return nil
 }
