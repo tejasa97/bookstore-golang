@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/olivere/elastic/v7"
-	"github.com/tejasa97/bookstore-golang/items/logger"
+	"github.com/tejasa97/utils-go/logger"
 )
 
 var (
@@ -23,11 +23,14 @@ type esClient struct {
 }
 
 func Init() {
+	log := logger.GetLogger()
 	client, err := elastic.NewClient(
 		elastic.SetURL("https://99a6772afe4c438690f2c1d6a8f30f41.asia-south1.gcp.elastic-cloud.com:9243"),
 		elastic.SetSniff(false),
 		elastic.SetBasicAuth("elastic", "jJrQNm2AW11VN6ua7Locwazr"),
 		elastic.SetHealthcheckInterval(10*time.Second),
+		elastic.SetErrorLog(log),
+		elastic.SetInfoLog(log),
 	)
 	if err != nil {
 		panic(err)
