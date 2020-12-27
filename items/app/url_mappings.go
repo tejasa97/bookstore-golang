@@ -10,5 +10,6 @@ func mapUrls() {
 
 	// TODO: Items
 	router.POST("/items", controllers.ItemsController.Create)
+	router.GET("/items/:item_id", controllers.ItemsController.Get)
 
 }

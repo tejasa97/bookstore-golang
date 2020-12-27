@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +24,6 @@ type itemsController struct{}
 
 func (i *itemsController) Create(c *gin.Context) {
 	if err := oauth.AuthenticateRequest(c.Request); err != nil {
-		// TODO : Return error to caller
 		c.JSON(err.Status, err)
 		return
 	}
@@ -46,10 +44,18 @@ func (i *itemsController) Create(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(item)
 	c.JSON(http.StatusCreated, item)
 }
 
 func (i *itemsController) Get(c *gin.Context) {
+	itemID := c.Param("item_id")
+
+	item, err := services.ItemsService.Get(itemID)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, item)
 
 }
