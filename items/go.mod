@@ -14,7 +14,7 @@ require (
 	github.com/olivere/elastic/v6 v6.2.1
 	github.com/olivere/elastic/v7 v7.0.22
 	github.com/tejasa97/oauth-go v0.0.0-20201224125445-f1bed23b1cc2
-	github.com/tejasa97/utils-go v0.0.0-20201226093304-02ae1c25f520
+	github.com/tejasa97/utils-go v0.0.0-20201227080201-55536615d97d
 	github.com/ugorji/go v1.2.2 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.16.0
