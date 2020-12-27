@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/tejasa97/bookstore-golang/items/clients/elasticsearch"
+	"github.com/tejasa97/bookstore-golang/items/domain/queries"
 	"github.com/tejasa97/utils-go/rest_errors"
 )
 
@@ -46,4 +47,27 @@ func (i *Item) Get() *rest_errors.RestErr {
 
 	i.ID = itemID
 	return nil
+}
+
+func (i *Item) Search(query queries.EsQuery) ([]Item, *rest_errors.RestErr) {
+	finalQuery := query.Build()
+	result, err := elasticsearch.Client.Search(indexItems, finalQuery)
+	if err != nil {
+		return nil, rest_errors.NewInternalServerError("error when trying to search documents", errors.New("database error"))
+	}
+
+	items := make([]Item, result.TotalHits())
+	for index, hit := range result.Hits.Hits {
+		bytes, _ := hit.Source.MarshalJSON()
+
+		var item Item
+		if err := json.Unmarshal(bytes, &item); err != nil {
+			return nil, rest_errors.NewInternalServerError("error when trying to parse response", errors.New("database error"))
+		}
+
+		item.ID = hit.Id
+		items[index] = item
+	}
+
+	return items, nil
 }
