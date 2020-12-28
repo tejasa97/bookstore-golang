@@ -80,3 +80,12 @@ func (i *Item) Delete() *rest_errors.RestErr {
 
 	return nil
 }
+
+func (i *Item) Update(id string) *rest_errors.RestErr {
+	_, err := elasticsearch.Client.Update(indexItems, id, i)
+	if err != nil {
+		return rest_errors.NewNotFoundError(fmt.Sprintf("error when trying to find item with id %s for updation", id))
+	}
+
+	return nil
+}

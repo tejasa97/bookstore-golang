@@ -13,5 +13,6 @@ func mapUrls() {
 	router.GET("/items/:item_id", controllers.ItemsController.Get)
 	router.POST("/items/search", controllers.ItemsController.Search)
 	router.DELETE("/items/:item_id", controllers.ItemsController.Delete)
+	router.POST("/items/update/:item_id", controllers.ItemsController.Update)
 
 }

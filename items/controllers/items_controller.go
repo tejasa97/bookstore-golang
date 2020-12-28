@@ -22,6 +22,7 @@ type itemsControllerInterface interface {
 	Get(*gin.Context)
 	Search(*gin.Context)
 	Delete(*gin.Context)
+	Update(*gin.Context)
 }
 
 type itemsController struct{}
@@ -107,4 +108,40 @@ func (i *itemsController) Delete(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+func (i *itemsController) Update(c *gin.Context) {
+	if err := oauth.AuthenticateRequest(c.Request); err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+
+	itemID := c.Param("item_id")
+	item, err := services.ItemsService.Get(itemID)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if oauth.GetCallerId(c.Request) != item.Seller {
+		authErr := rest_errors.NewUnauthorizedError("not authorized")
+		c.JSON(authErr.Status, authErr)
+		return
+	}
+
+	var itemRequest items.Item
+	if err := c.ShouldBindJSON(&itemRequest); err != nil {
+		restErr := rest_errors.NewBadRequestError("invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+
+	itemRequest.Seller = oauth.GetCallerId(c.Request)
+	updateErr := services.ItemsService.Update(itemID, itemRequest)
+	if updateErr != nil {
+		c.JSON(updateErr.Status, updateErr)
+		return
+	}
+
+	c.JSON(http.StatusCreated, `{"hello": "world"}`)
 }
