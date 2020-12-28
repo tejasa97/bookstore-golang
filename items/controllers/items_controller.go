@@ -40,7 +40,7 @@ func (i *itemsController) Create(c *gin.Context) {
 	}
 
 	// Assign `seller` to the caller of the request
-	itemRequest.Seller = oauth.GetClientId(c.Request)
+	itemRequest.Seller = oauth.GetCallerId(c.Request)
 
 	item, err := services.ItemsService.Create(itemRequest)
 	if err != nil {
@@ -65,7 +65,6 @@ func (i *itemsController) Get(c *gin.Context) {
 }
 
 func (i *itemsController) Search(c *gin.Context) {
-
 	var eq queries.EsQuery
 	if err := c.ShouldBindJSON(&eq); err != nil {
 		restErr := rest_errors.NewBadRequestError("invalid json body")
@@ -83,9 +82,25 @@ func (i *itemsController) Search(c *gin.Context) {
 }
 
 func (i *itemsController) Delete(c *gin.Context) {
-	itemID := c.Param("item_id")
+	if err := oauth.AuthenticateRequest(c.Request); err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
 
-	err := services.ItemsService.Delete(itemID)
+	itemID := c.Param("item_id")
+	item, err := services.ItemsService.Get(itemID)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if oauth.GetCallerId(c.Request) != item.Seller {
+		authErr := rest_errors.NewUnauthorizedError("not authorized")
+		c.JSON(authErr.Status, authErr)
+		return
+	}
+
+	err = services.ItemsService.Delete(itemID)
 	if err != nil {
 		c.JSON(err.Status, err)
 		return
