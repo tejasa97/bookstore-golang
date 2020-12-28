@@ -18,6 +18,7 @@ type esClientInterface interface {
 	Index(string, interface{}) (*elastic.IndexResponse, error)
 	Get(string, string) (*elastic.GetResult, error)
 	Search(string, elastic.Query) (*elastic.SearchResult, error)
+	Delete(string, string) (*elastic.DeleteResponse, error)
 }
 
 type esClient struct {
@@ -81,6 +82,22 @@ func (c *esClient) Search(index string, query elastic.Query) (*elastic.SearchRes
 	result, err := c.client.Search(index).Query(query).Do(ctx)
 	if err != nil {
 		logger.Error(fmt.Sprintf("error when trying to search documents in index %s", index), err)
+		return nil, err
+	}
+
+	return result, nil
+}
+
+func (c *esClient) Delete(index string, id string) (*elastic.DeleteResponse, error) {
+	ctx := context.Background()
+
+	result, err := c.client.Delete().
+		Index(index).
+		Id(id).
+		Do(ctx)
+
+	if err != nil {
+		logger.Error(fmt.Sprintf("error when trying to delete document with id %s in index %s", id, index), err)
 		return nil, err
 	}
 

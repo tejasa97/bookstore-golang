@@ -14,6 +14,7 @@ type itemsServiceInterface interface {
 	Create(items.Item) (*items.Item, *rest_errors.RestErr)
 	Get(string) (*items.Item, *rest_errors.RestErr)
 	Search(queries.EsQuery) ([]items.Item, *rest_errors.RestErr)
+	Delete(string) *rest_errors.RestErr
 }
 
 type itemsService struct{}
@@ -46,4 +47,15 @@ func (s *itemsService) Search(query queries.EsQuery) ([]items.Item, *rest_errors
 	}
 
 	return items, nil
+}
+
+func (s *itemsService) Delete(id string) *rest_errors.RestErr {
+
+	itemsDao := items.Item{ID: id}
+	err := itemsDao.Delete()
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

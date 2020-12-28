@@ -21,6 +21,7 @@ type itemsControllerInterface interface {
 	Create(*gin.Context)
 	Get(*gin.Context)
 	Search(*gin.Context)
+	Delete(*gin.Context)
 }
 
 type itemsController struct{}
@@ -79,4 +80,16 @@ func (i *itemsController) Search(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, items)
+}
+
+func (i *itemsController) Delete(c *gin.Context) {
+	itemID := c.Param("item_id")
+
+	err := services.ItemsService.Delete(itemID)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
